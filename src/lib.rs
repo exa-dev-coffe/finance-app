@@ -14,7 +14,6 @@ use tower_http::cors::CorsLayer;
 use crate::{
     config::AppConfig,
     modules::{
-        auth::{handler::auth_router, service::AuthService},
         expense::{handler::expense_router, repository::ExpenseRepository, service::ExpenseService},
         grpc::InventoryClient,
         purchase::{handler::purchase_router, repository::PurchaseRepository, service::PurchaseService},
@@ -187,14 +186,12 @@ pub fn create_app_instance(config: AppConfig, pool: PgPool, hub: Arc<RealtimeHub
     let report_service = Arc::new(ReportService::new(pool.clone()));
 
     let user_service = Arc::new(UserService::with_default_repo(pool.clone()));
-    let auth_service = Arc::new(AuthService::with_default_repos(pool, config.clone()));
 
     let mut api_routes = Router::new()
         .nest("/suppliers", supplier_router(supplier_service))
         .nest("/purchases", purchase_router(purchase_service))
         .nest("/expenses", expense_router(expense_service))
         .nest("/reports", report_router(report_service))
-        .nest("/auth", auth_router(auth_service))
         .nest("/users", user_router(user_service))
         .nest("/realtime", realtime_router(hub))
         .route("/protected/data", get(protected_data_handler))
