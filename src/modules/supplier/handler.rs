@@ -8,7 +8,9 @@ use std::sync::Arc;
 use uuid::Uuid;
 
 use crate::pkg::{
-    auth::jwt::{AdminUser, StaffUser},
+    auth::{
+        RequireSupplierCreate, RequireSupplierDelete, RequireSupplierEdit, RequireSupplierView,
+    },
     errors::AppError,
     response::BaseResponse,
 };
@@ -23,7 +25,7 @@ pub fn supplier_router(service: Arc<SupplierService>) -> Router {
 }
 
 async fn list_suppliers(
-    _staff: StaffUser,
+    _perm: RequireSupplierView,
     State(service): State<Arc<SupplierService>>,
     Query(query): Query<SupplierQuery>,
 ) -> Result<impl IntoResponse, AppError> {
@@ -32,7 +34,7 @@ async fn list_suppliers(
 }
 
 async fn create_supplier(
-    _admin: AdminUser,
+    _perm: RequireSupplierCreate,
     State(service): State<Arc<SupplierService>>,
     Json(dto): Json<CreateSupplierDto>,
 ) -> Result<impl IntoResponse, AppError> {
@@ -41,7 +43,7 @@ async fn create_supplier(
 }
 
 async fn get_supplier(
-    _staff: StaffUser,
+    _perm: RequireSupplierView,
     State(service): State<Arc<SupplierService>>,
     Path(id): Path<Uuid>,
 ) -> Result<impl IntoResponse, AppError> {
@@ -50,7 +52,7 @@ async fn get_supplier(
 }
 
 async fn update_supplier(
-    _admin: AdminUser,
+    _perm: RequireSupplierEdit,
     State(service): State<Arc<SupplierService>>,
     Path(id): Path<Uuid>,
     Json(dto): Json<UpdateSupplierDto>,
@@ -60,7 +62,7 @@ async fn update_supplier(
 }
 
 async fn delete_supplier(
-    _admin: AdminUser,
+    _perm: RequireSupplierDelete,
     State(service): State<Arc<SupplierService>>,
     Path(id): Path<Uuid>,
 ) -> Result<impl IntoResponse, AppError> {

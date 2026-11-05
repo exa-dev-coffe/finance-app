@@ -1,7 +1,7 @@
 use axum::{extract::State, response::IntoResponse, routing::get, Router};
 use std::sync::Arc;
 
-use crate::pkg::{auth::jwt::StaffUser, errors::AppError, response::BaseResponse};
+use crate::pkg::{auth::RequireFinanceView, errors::AppError, response::BaseResponse};
 use super::service::ReportService;
 
 pub fn report_router(service: Arc<ReportService>) -> Router {
@@ -12,7 +12,7 @@ pub fn report_router(service: Arc<ReportService>) -> Router {
 }
 
 async fn get_financial_summary(
-    _staff: StaffUser,
+    _perm: RequireFinanceView,
     State(service): State<Arc<ReportService>>,
 ) -> Result<impl IntoResponse, AppError> {
     let report = service.get_financial_summary().await?;
@@ -20,7 +20,7 @@ async fn get_financial_summary(
 }
 
 async fn get_monthly_breakdown(
-    _staff: StaffUser,
+    _perm: RequireFinanceView,
     State(service): State<Arc<ReportService>>,
 ) -> Result<impl IntoResponse, AppError> {
     let report = service.get_monthly_breakdown().await?;

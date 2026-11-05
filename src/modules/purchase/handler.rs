@@ -8,7 +8,9 @@ use std::sync::Arc;
 use uuid::Uuid;
 
 use crate::pkg::{
-    auth::jwt::{AdminUser, StaffUser},
+    auth::{
+        RequirePurchaseCreate, RequirePurchaseDelete, RequirePurchaseEdit, RequirePurchaseView,
+    },
     errors::AppError,
     response::BaseResponse,
 };
@@ -26,7 +28,7 @@ pub fn purchase_router(service: Arc<PurchaseService>) -> Router {
 }
 
 async fn list_purchases(
-    _staff: StaffUser,
+    _perm: RequirePurchaseView,
     State(service): State<Arc<PurchaseService>>,
     Query(query): Query<PurchaseQuery>,
 ) -> Result<impl IntoResponse, AppError> {
@@ -35,16 +37,16 @@ async fn list_purchases(
 }
 
 async fn create_purchase(
-    staff: StaffUser,
+    perm: RequirePurchaseCreate,
     State(service): State<Arc<PurchaseService>>,
     Json(dto): Json<CreatePurchaseDto>,
 ) -> Result<impl IntoResponse, AppError> {
-    let purchase = service.create(dto, &staff.email).await?;
+    let purchase = service.create(dto, &perm.email).await?;
     Ok(BaseResponse::created(purchase, "Purchase order created successfully"))
 }
 
 async fn get_purchase(
-    _staff: StaffUser,
+    _perm: RequirePurchaseView,
     State(service): State<Arc<PurchaseService>>,
     Path(id): Path<Uuid>,
 ) -> Result<impl IntoResponse, AppError> {
@@ -53,25 +55,25 @@ async fn get_purchase(
 }
 
 async fn receive_purchase(
-    staff: StaffUser,
+    perm: RequirePurchaseEdit,
     State(service): State<Arc<PurchaseService>>,
     Path(id): Path<Uuid>,
 ) -> Result<impl IntoResponse, AppError> {
-    let detail = service.receive_purchase(id, &staff.email).await?;
+    let detail = service.receive_purchase(id, &perm.email).await?;
     Ok(BaseResponse::success(detail, "Purchase received and inventory replenished successfully"))
 }
 
 async fn pay_purchase(
-    staff: StaffUser,
+    perm: RequirePurchaseEdit,
     State(service): State<Arc<PurchaseService>>,
     Path(id): Path<Uuid>,
 ) -> Result<impl IntoResponse, AppError> {
-    let detail = service.pay_purchase(id, &staff.email).await?;
+    let detail = service.pay_purchase(id, &perm.email).await?;
     Ok(BaseResponse::success(detail, "Purchase marked as paid and expense recorded successfully"))
 }
 
 async fn cancel_purchase(
-    _admin: AdminUser,
+    _perm: RequirePurchaseDelete,
     State(service): State<Arc<PurchaseService>>,
     Path(id): Path<Uuid>,
 ) -> Result<impl IntoResponse, AppError> {

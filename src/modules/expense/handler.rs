@@ -10,7 +10,7 @@ use std::sync::Arc;
 use uuid::Uuid;
 
 use crate::pkg::{
-    auth::jwt::{AdminUser, StaffUser},
+    auth::{RequireExpenseCreate, RequireExpenseDelete, RequireExpenseEdit, RequireExpenseView},
     errors::AppError,
     response::BaseResponse,
 };
@@ -32,7 +32,7 @@ pub fn expense_router(service: Arc<ExpenseService>) -> Router {
 }
 
 async fn list_expenses(
-    _staff: StaffUser,
+    _perm: RequireExpenseView,
     State(service): State<Arc<ExpenseService>>,
     Query(query): Query<ExpenseQuery>,
 ) -> Result<impl IntoResponse, AppError> {
@@ -41,7 +41,7 @@ async fn list_expenses(
 }
 
 async fn get_expense_summary(
-    _staff: StaffUser,
+    _perm: RequireExpenseView,
     State(service): State<Arc<ExpenseService>>,
     Query(query): Query<SummaryQuery>,
 ) -> Result<impl IntoResponse, AppError> {
@@ -50,16 +50,16 @@ async fn get_expense_summary(
 }
 
 async fn create_expense(
-    staff: StaffUser,
+    perm: RequireExpenseCreate,
     State(service): State<Arc<ExpenseService>>,
     Json(dto): Json<CreateExpenseDto>,
 ) -> Result<impl IntoResponse, AppError> {
-    let expense = service.create(dto, &staff.email).await?;
+    let expense = service.create(dto, &perm.email).await?;
     Ok(BaseResponse::created(expense, "Expense recorded successfully"))
 }
 
 async fn get_expense(
-    _staff: StaffUser,
+    _perm: RequireExpenseView,
     State(service): State<Arc<ExpenseService>>,
     Path(id): Path<Uuid>,
 ) -> Result<impl IntoResponse, AppError> {
@@ -68,7 +68,7 @@ async fn get_expense(
 }
 
 async fn update_expense(
-    _admin: AdminUser,
+    _perm: RequireExpenseEdit,
     State(service): State<Arc<ExpenseService>>,
     Path(id): Path<Uuid>,
     Json(dto): Json<UpdateExpenseDto>,
@@ -78,7 +78,7 @@ async fn update_expense(
 }
 
 async fn delete_expense(
-    _admin: AdminUser,
+    _perm: RequireExpenseDelete,
     State(service): State<Arc<ExpenseService>>,
     Path(id): Path<Uuid>,
 ) -> Result<impl IntoResponse, AppError> {
