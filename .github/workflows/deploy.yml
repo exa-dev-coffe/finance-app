@@ -130,91 +130,16 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -p 31080 -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
 
+          # Apply base deployment and service to k8s cluster via SSH
+          ssh -p 31080 -i ~/.ssh/id_ed25519 deploy@${{ secrets.VPS_HOST }} \
+            "export KUBECONFIG=/home/deploy/.kube/config; kubectl apply -f -" < k8s/finance-service.yaml
+
+          # Patch image and check rollout
           ssh -p 31080 -i ~/.ssh/id_ed25519 deploy@${{ secrets.VPS_HOST }} << EOF
             export KUBECONFIG=/home/deploy/.kube/config
 
-            # Ensure runtime secret exists if not already created
-            if ! kubectl get secret finance-env -n coffe >/dev/null 2>&1; then
-              kubectl create secret generic finance-env -n coffe \
-                --from-literal=APP_PORT=8087 \
-                --from-literal=GRPC_PORT=9087
-            fi
-
-            # Ensure deployment & service exist in cluster
-            cat << 'MANIFEST' | kubectl apply -f -
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: finance-service-coffe
-  namespace: coffe
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: finance-service-coffe
-  template:
-    metadata:
-      labels:
-        app: finance-service-coffe
-    spec:
-      imagePullSecrets:
-        - name: ghcr-secret
-      containers:
-        - name: finance-service-coffe
-          image: ghcr.io/${{ github.repository_owner }}/finance-service-coffe:${{ steps.vars.outputs.sha }}
-          ports:
-            - name: http
-              containerPort: 8087
-            - name: grpc
-              containerPort: 9087
-          startupProbe:
-            httpGet:
-              path: /health
-              port: 8087
-            failureThreshold: 10
-            periodSeconds: 3
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: 8087
-            initialDelaySeconds: 3
-            periodSeconds: 3
-          resources:
-            requests:
-              cpu: 100m
-              memory: 128Mi
-            limits:
-              cpu: 500m
-              memory: 256Mi
-          envFrom:
-            - secretRef:
-                name: finance-env
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: finance-service-coffe
-  namespace: coffe
-spec:
-  selector:
-    app: finance-service-coffe
-  ports:
-    - name: http
-      protocol: TCP
-      port: 8087
-      targetPort: 8087
-    - name: grpc
-      protocol: TCP
-      port: 9087
-      targetPort: 9087
-  type: ClusterIP
-MANIFEST
-
-            # Patch the deployment to use the new SHA tag
             kubectl set image deployment/finance-service-coffe -n coffe \
               finance-service-coffe=ghcr.io/${{ github.repository_owner }}/finance-service-coffe:${{ steps.vars.outputs.sha }}
 
-            # Rollout status
             kubectl rollout status deployment/finance-service-coffe -n coffe --timeout=180s || true
           EOF
-
