@@ -25,9 +25,9 @@ FROM debian:bookworm-slim
 WORKDIR /app
 RUN apt-get update && apt-get install -y ca-certificates libssl3 curl && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /app/target/release/inventory-app /app/server
+COPY --from=builder /app/target/release/finance-app /app/server
 COPY migrations ./migrations
 COPY .env.example ./.env
 
-EXPOSE 8086 9086
+EXPOSE 8087 9087
 CMD ["/app/server"]
