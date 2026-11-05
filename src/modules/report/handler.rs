@@ -26,3 +26,4 @@ async fn get_monthly_breakdown(
     let report = service.get_monthly_breakdown().await?;
     Ok(BaseResponse::success(report, "Monthly expense breakdown retrieved successfully"))
 }
+

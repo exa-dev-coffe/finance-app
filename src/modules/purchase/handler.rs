@@ -78,3 +78,4 @@ async fn cancel_purchase(
     let detail = service.cancel_purchase(id).await?;
     Ok(BaseResponse::success(detail, "Purchase order cancelled successfully"))
 }
+

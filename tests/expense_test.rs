@@ -45,3 +45,4 @@ fn test_expense_summary_calculation() {
     assert_eq!(summary.total_expense, Decimal::from(5150000));
     assert_eq!(summary.categories.len(), 3);
 }
+

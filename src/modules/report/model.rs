@@ -17,3 +17,4 @@ pub struct FinancialSummaryReport {
     pub total_expenses: Decimal,
     pub generated_at: DateTime<Utc>,
 }
+

@@ -41,3 +41,4 @@ fn test_create_purchase_dto_and_totals() {
     assert_eq!(dto.items.len(), 2);
     assert_eq!(dto.payment_method.unwrap(), "BANK_TRANSFER");
 }
+

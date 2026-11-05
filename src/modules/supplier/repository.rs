@@ -96,3 +96,4 @@ impl SupplierRepository {
         Ok(rows > 0)
     }
 }
+

@@ -19,3 +19,4 @@ fn test_financial_summary_report() {
     assert_eq!(report.total_operational_expense, Decimal::from(1500000));
     assert_eq!(report.total_expenses, Decimal::from(6000000));
 }
+

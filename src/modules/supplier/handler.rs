@@ -67,3 +67,4 @@ async fn delete_supplier(
     service.delete(id).await?;
     Ok(BaseResponse::ok_msg("Supplier deleted successfully"))
 }
+

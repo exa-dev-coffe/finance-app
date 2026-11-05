@@ -85,3 +85,4 @@ async fn delete_expense(
     service.delete(id).await?;
     Ok(BaseResponse::ok_msg("Expense deleted successfully"))
 }
+

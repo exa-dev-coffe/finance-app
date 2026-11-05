@@ -76,3 +76,4 @@ CREATE INDEX IF NOT EXISTS idx_purchase_items_purchase_id ON purchase_items(purc
 CREATE INDEX IF NOT EXISTS idx_expenses_category ON expenses(category);
 CREATE INDEX IF NOT EXISTS idx_expenses_expense_date ON expenses(expense_date);
 CREATE INDEX IF NOT EXISTS idx_expenses_purchase_id ON expenses(purchase_id);
+

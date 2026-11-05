@@ -32,3 +32,4 @@ fn test_update_supplier_dto() {
     assert_eq!(dto.name.unwrap(), "PT Kopi Gayo Mandiri");
     assert_eq!(dto.is_active, Some(false));
 }
+

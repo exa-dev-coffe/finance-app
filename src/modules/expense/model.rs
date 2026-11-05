@@ -66,3 +66,4 @@ pub struct ExpenseSummaryResponse {
     pub total_expense: Decimal,
     pub categories: Vec<ExpenseCategorySummary>,
 }
+
