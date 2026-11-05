@@ -67,3 +67,32 @@ spec:
       port: 9087
       targetPort: 9087
   type: ClusterIP
+
+---
+# 3. Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: finance-service-coffe
+  namespace: coffe
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  tls:
+    - hosts:
+        - finance-service-coffe.eka-dev.cloud
+      secretName: finance-tls
+  rules:
+    - host: finance-service-coffe.eka-dev.cloud
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: finance-service-coffe
+                port:
+                  number: 8087
+
+
