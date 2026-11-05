@@ -140,3 +140,4 @@ jobs:
             # Rollout status
             kubectl rollout status deployment/finance-service-coffe -n coffe --timeout=180s
           EOF
+
