@@ -14,7 +14,7 @@ use crate::pkg::{
     errors::AppError,
     response::BaseResponse,
 };
-use super::model::{CreatePurchaseDto, PurchaseQuery};
+use super::model::{CreatePurchaseDto, PurchaseQuery, ReceivePurchaseDto};
 use super::service::PurchaseService;
 
 pub fn purchase_router(service: Arc<PurchaseService>) -> Router {
@@ -58,8 +58,10 @@ async fn receive_purchase(
     perm: RequirePurchaseEdit,
     State(service): State<Arc<PurchaseService>>,
     Path(id): Path<Uuid>,
+    payload: Option<Json<ReceivePurchaseDto>>,
 ) -> Result<impl IntoResponse, AppError> {
-    let detail = service.receive_purchase(id, &perm.email).await?;
+    let dto = payload.map(|Json(d)| d);
+    let detail = service.receive_purchase(id, &perm.email, dto).await?;
     Ok(BaseResponse::success(detail, "Purchase received and inventory replenished successfully"))
 }
 

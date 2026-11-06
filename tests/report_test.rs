@@ -9,9 +9,17 @@ fn test_financial_summary_report() {
     let total = raw_material + operational;
 
     let report = FinancialSummaryReport {
+        from: "2026-01-01".to_string(),
+        to: "2026-12-31".to_string(),
+        total_revenue: Decimal::from(10000000),
+        cogs: raw_material,
+        gross_profit: Decimal::from(5500000),
+        gross_margin_percent: Decimal::from(55),
         total_raw_material_expense: raw_material,
         total_operational_expense: operational,
         total_expenses: total,
+        net_profit: Decimal::from(4000000),
+        net_margin_percent: Decimal::from(40),
         generated_at: Utc::now(),
     };
 

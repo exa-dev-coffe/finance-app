@@ -123,17 +123,22 @@ impl PurchaseRepository {
         Ok(Some(PurchaseDetailResponse { purchase, items }))
     }
 
-    pub async fn mark_as_received(&self, id: Uuid, received_by: &str) -> Result<Option<Purchase>> {
+    pub async fn update_status(&self, id: Uuid, status: &str, received_by: &str) -> Result<Option<Purchase>> {
         sqlx::query_as::<_, Purchase>(
             "UPDATE purchases
-             SET status = 'RECEIVED', received_at = NOW(), received_by = $2, updated_at = NOW()
+             SET status = $2, received_at = NOW(), received_by = $3, updated_at = NOW()
              WHERE id = $1 AND status != 'CANCELLED'
              RETURNING id, purchase_number, supplier_id, NULL as supplier_name, purchase_date, status, payment_status, payment_method, total_amount, paid_amount, invoice_number, notes, created_by, received_at, received_by, created_at, updated_at",
         )
         .bind(id)
+        .bind(status)
         .bind(received_by)
         .fetch_optional(&self.pool)
         .await
+    }
+
+    pub async fn mark_as_received(&self, id: Uuid, received_by: &str) -> Result<Option<Purchase>> {
+        self.update_status(id, "RECEIVED", received_by).await
     }
 
     pub async fn mark_as_paid(&self, id: Uuid) -> Result<Option<Purchase>> {

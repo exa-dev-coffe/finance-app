@@ -63,6 +63,17 @@ pub struct CreatePurchaseDto {
     pub items: Vec<CreatePurchaseItemDto>,
 }
 
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct ReceiveItemPayload {
+    pub ingredient_id: Uuid,
+    pub quantity: Decimal,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, Default)]
+pub struct ReceivePurchaseDto {
+    pub items: Option<Vec<ReceiveItemPayload>>,
+}
+
 #[derive(Debug, Deserialize)]
 pub struct PurchaseQuery {
     pub status: Option<String>,

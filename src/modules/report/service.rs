@@ -37,11 +37,25 @@ impl ReportService {
         }
 
         let total = raw_material + operational;
+        let cogs = raw_material;
+        let total_revenue = Decimal::ZERO;
+        let gross_profit = total_revenue - cogs;
+        let net_profit = gross_profit - operational;
+        let gross_margin_percent = Decimal::ZERO;
+        let net_margin_percent = Decimal::ZERO;
 
         Ok(FinancialSummaryReport {
+            from: "".to_string(),
+            to: "".to_string(),
+            total_revenue,
+            cogs,
+            gross_profit,
+            gross_margin_percent,
             total_raw_material_expense: raw_material,
             total_operational_expense: operational,
             total_expenses: total,
+            net_profit,
+            net_margin_percent,
             generated_at: Utc::now(),
         })
     }

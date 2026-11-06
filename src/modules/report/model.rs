@@ -12,9 +12,17 @@ pub struct MonthlyExpenseReport {
 
 #[derive(Debug, Serialize)]
 pub struct FinancialSummaryReport {
+    pub from: String,
+    pub to: String,
+    pub total_revenue: Decimal,
+    pub cogs: Decimal,
+    pub gross_profit: Decimal,
+    pub gross_margin_percent: Decimal,
     pub total_raw_material_expense: Decimal,
     pub total_operational_expense: Decimal,
     pub total_expenses: Decimal,
+    pub net_profit: Decimal,
+    pub net_margin_percent: Decimal,
     pub generated_at: DateTime<Utc>,
 }
 
