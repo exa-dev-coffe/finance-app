@@ -20,6 +20,8 @@ pub struct FinancialSummaryReport {
     pub gross_margin_percent: Decimal,
     pub total_raw_material_expense: Decimal,
     pub total_operational_expense: Decimal,
+    #[serde(default)]
+    pub total_spoilage_loss: Decimal,
     pub total_expenses: Decimal,
     pub net_profit: Decimal,
     pub net_margin_percent: Decimal,

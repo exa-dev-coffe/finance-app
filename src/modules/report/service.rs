@@ -27,10 +27,14 @@ impl ReportService {
 
         let mut raw_material = Decimal::ZERO;
         let mut operational = Decimal::ZERO;
+        let mut spoilage = Decimal::ZERO;
 
         for (cat, amount) in rows {
             if cat == "RAW_MATERIAL" {
                 raw_material += amount;
+            } else if cat == "SPOILAGE" || cat == "WASTE_LOSS" {
+                spoilage += amount;
+                operational += amount;
             } else {
                 operational += amount;
             }
@@ -53,6 +57,7 @@ impl ReportService {
             gross_margin_percent,
             total_raw_material_expense: raw_material,
             total_operational_expense: operational,
+            total_spoilage_loss: spoilage,
             total_expenses: total,
             net_profit,
             net_margin_percent,

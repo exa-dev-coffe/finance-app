@@ -17,6 +17,7 @@ fn test_financial_summary_report() {
         gross_margin_percent: Decimal::from(55),
         total_raw_material_expense: raw_material,
         total_operational_expense: operational,
+        total_spoilage_loss: Decimal::ZERO,
         total_expenses: total,
         net_profit: Decimal::from(4000000),
         net_margin_percent: Decimal::from(40),
